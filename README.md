@@ -1,2 +1,4 @@
-# Micros-corte-1
-Apuntes primer corte
+__Jhon Trujillo y Juan__
+#*Apuntes primer corte*
+##Semana 1
+###1. ¿Que es un micropocesador?
