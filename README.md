@@ -1,5 +1,5 @@
 _Jhon Trujillo y Juan Ospina_
-# **Apuntes primer corte**
+# **Apuntes segundo corte**
 ## **Semana 1**
 ### _1. ¿Que es un micropocesador?_
 el microprocesador es un componente fundamental que permite que los dispositivos electrónicos procesen información y realicen tareas complejas.
