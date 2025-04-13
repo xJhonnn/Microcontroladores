@@ -101,7 +101,7 @@ Los prescalers suelen ofrecer una variedad de factores de división, que a menud
 ### _7. Granularidad_
 la granularidad se refiere al nivel de detalle o la menor unidad con la que se pueden controlar, medir o configurar los diferentes recursos y funcionalidades del microcontrolador. Es la "finura" con la que se puede interactuar con el hardware y el software del MCU.
 #### Ejemplo 
-####![image](https://github.com/user-attachments/assets/0a175591-c362-4543-bf64-dc6bf209b541)
+#### ![image](https://github.com/user-attachments/assets/0a175591-c362-4543-bf64-dc6bf209b541)
 ### _8. Señal externa_
 las señales externas son voltajes o corrientes eléctricas que provienen de fuentes fuera del propio dispositivo o circuito integrado. Estas señales interactúan con el dispositivo a través de sus pines de entrada/salida (I/O) y son fundamentales para que el dispositivo pueda percibir y responder al mundo exterior o comunicarse con otros componentes.
 #### Características Clave de las Señales Externas:
@@ -122,27 +122,27 @@ las señales externas son voltajes o corrientes eléctricas que provienen de fue
 ### _9. Timers_
 El microcontrolador PIC18F4550 cuenta con varios módulos de temporizador/contador versátiles, que son esenciales para una amplia gama de aplicaciones, desde la generación de retardos precisos hasta la implementación de PWM y la captura de eventos. A continuación, se detallan los timers disponibles en este microcontrolador:
 #### **1. Timer0:**
-##### **• Tamaño: Puede configurarse como un temporizador/contador de 8 o 16 bits.
-##### **• Fuente de Reloj: Puede usar el reloj interno (Fosc/4) o una señal de reloj externa en el pin RA4/T0CKI.
-##### **• Prescaler: Dispone de un prescaler programable con opciones de división desde 1:2 hasta 1:256.
-##### **• Interrupción: Puede generar una interrupción por desbordamiento (cuando el contador regresa de su valor máximo a 0).
-##### **• Aplicaciones Comunes: Generación de retardos, conteo de eventos externos, base de tiempo para otras funciones.
+##### **• Tamaño:** Puede configurarse como un temporizador/contador de 8 o 16 bits.
+##### **• Fuente de Reloj:** Puede usar el reloj interno (Fosc/4) o una señal de reloj externa en el pin RA4/T0CKI.
+##### **• Prescaler:** Dispone de un prescaler programable con opciones de división desde 1:2 hasta 1:256.
+##### **• Interrupción:** Puede generar una interrupción por desbordamiento (cuando el contador regresa de su valor máximo a 0).
+##### **• Aplicaciones Comunes:** Generación de retardos, conteo de eventos externos, base de tiempo para otras funciones.
 #### **2. Timer1:**
-##### **• Tamaño: Temporizador/contador de 16 bits.
-##### **• Fuente de Reloj: Puede usar el reloj interno (Fosc/4), una señal de reloj externa en el pin RC0/T1OSO y RC1/T1OSI (para el oscilador de baja potencia de 32 kHz), o el reloj interno dividido por un prescaler.
-##### **• Prescaler: Dispone de un prescaler programable con opciones de división de 1:1, 1:2, 1:4 u 1:8.
-##### **• Modo de Sincronización del Reloj Externo: Puede sincronizar la entrada del reloj externo.
-##### **• Oscilador de Baja Potencia de 32 kHz: Puede utilizar un cristal externo de 32.768 kHz para aplicaciones de tiempo real o de bajo consumo.
-##### **• Interrupción: Puede generar una interrupción por desbordamiento.
-##### **• Aplicaciones Comunes: Temporización precisa, reloj de tiempo real (RTC) con el oscilador de baja potencia, captura de eventos.
+##### **• Tamaño:** Temporizador/contador de 16 bits.
+##### **• Fuente de Reloj:** Puede usar el reloj interno (Fosc/4), una señal de reloj externa en el pin RC0/T1OSO y RC1/T1OSI (para el oscilador de baja potencia de 32 kHz), o el reloj interno dividido por un prescaler.
+##### **• Prescaler:** Dispone de un prescaler programable con opciones de división de 1:1, 1:2, 1:4 u 1:8.
+##### **• Modo de Sincronización del Reloj Externo:** Puede sincronizar la entrada del reloj externo.
+##### **• Oscilador de Baja Potencia de 32 kHz:** Puede utilizar un cristal externo de 32.768 kHz para aplicaciones de tiempo real o de bajo consumo.
+##### **• Interrupción:** Puede generar una interrupción por desbordamiento.
+##### **• Aplicaciones Comunes:** Temporización precisa, reloj de tiempo real (RTC) con el oscilador de baja potencia, captura de eventos.
 #### **3. Timer2:**
-##### **• Tamaño: Temporizador de 8 bits.
-##### **• Fuente de Reloj: Siempre utiliza el reloj interno (Fosc/4) dividido por un prescaler.
-##### **• Prescaler: Dispone de un prescaler programable con opciones de división de 1:1, 1:4 o 1:16.
-##### **• Postscaler: Cuenta con un postscaler programable con opciones de división desde 1:1 hasta 1:16. El postscaler incrementa un contador interno después de que el Timer2 desborda un cierto número de veces antes de generar una interrupción o activar otra función.
-##### **• Utilizado para PWM: Es el temporizador base para el módulo PWM (Pulse Width Modulation) del CCP (Capture/Compare/PWM) en modo PWM.
-##### **• Interrupción: Puede generar una interrupción por desbordamiento.
-##### **• Aplicaciones Comunes: Generación de señales PWM, base de tiempo para control de periféricos.
+##### **• Tamaño:** Temporizador de 8 bits.
+##### **• Fuente de Reloj:** Siempre utiliza el reloj interno (Fosc/4) dividido por un prescaler.
+##### **• Prescaler:** Dispone de un prescaler programable con opciones de división de 1:1, 1:4 o 1:16.
+##### **• Postscaler:** Cuenta con un postscaler programable con opciones de división desde 1:1 hasta 1:16. El postscaler incrementa un contador interno después de que el Timer2 desborda un cierto número de veces antes de generar una interrupción o activar otra función.
+##### **• Utilizado para PWM:** Es el temporizador base para el módulo PWM (Pulse Width Modulation) del CCP (Capture/Compare/PWM) en modo PWM.
+##### **• Interrupción:** Puede generar una interrupción por desbordamiento.
+##### **• Aplicaciones Comunes:** Generación de señales PWM, base de tiempo para control de periféricos.
 #### **4. Timer3:**
 ##### **• Tamaño:** Temporizador/contador de 16 bits.
 ##### **• Fuente de Reloj:** Puede usar el reloj interno (Fosc/4) o una señal de reloj externa en el pin RC2/T3CKI.
@@ -210,7 +210,7 @@ Las pantallas dot-matrix (también conocidas como pantallas de matriz de puntos)
 ##### **• Control Individual de Puntos:** Cada punto dentro de la matriz puede ser controlado independientemente de los demás.
 ##### **• Flexibilidad de Visualización:** Al controlar los puntos individualmente, se pueden mostrar una amplia variedad de caracteres, símbolos personalizados y gráficos básicos.
 ##### **• Variedad de Tecnologías:** Las pantallas dot-matrix pueden utilizar diferentes tecnologías para generar la luz o controlar los píxeles: LED (Diodo Emisor de Luz), LCD (Pantalla de Cristal Líquido), OLED (Diodo Orgánico Emisor de Luz), E-ink (Tinta Electrónica)
-##### **• Diferentes Tamaños y Resoluciones: Las pantallas dot-matrix vienen en una amplia gama de tamaños y resoluciones, desde pequeñas matrices de 5x7 puntos para mostrar caracteres individuales hasta grandes paneles con miles de puntos para mostrar gráficos e imágenes más complejas.
+##### **• Diferentes Tamaños y Resoluciones:** Las pantallas dot-matrix vienen en una amplia gama de tamaños y resoluciones, desde pequeñas matrices de 5x7 puntos para mostrar caracteres individuales hasta grandes paneles con miles de puntos para mostrar gráficos e imágenes más complejas.
 ##### **• Interfaz de Control: Requieren una interfaz electrónica para controlar el estado de cada punto de la matriz. Esta interfaz puede ser paralela o serial, dependiendo del tamaño y la complejidad de la pantalla.
 #### ![image](https://github.com/user-attachments/assets/4faa24cc-8f26-4e70-a9b0-59b54551a41b)
 ### _3. Memoria de la LCD_
