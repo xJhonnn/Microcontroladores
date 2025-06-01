@@ -1,4 +1,4 @@
-_Jhon Trujillo, Juan Ospina y Heissen_
+_Jhon Trujillo, Juan Ospina y Heisen Diaz_
 # **Apuntes tercer corte**
 ## **Semana 12**
 ### _1. Modulo de captura_
