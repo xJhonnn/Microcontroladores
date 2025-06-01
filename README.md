@@ -440,48 +440,193 @@ Segun el datasheet, los primeros pasos son los mismos
 ##### ![image](https://github.com/user-attachments/assets/bd92e659-2e68-4f57-8299-811d2c4ceec2)
 
 ## **Semana 14**
-### _1. _
+### _1. SPI (Serial peripherial interface)_
+El SPI (Serial Peripheral Interface), que significa "Interfaz Periférica en Serie", es un protocolo de comunicación serie síncrono y full-duplex (bidireccional simultáneo) muy popular, desarrollado por Motorola a mediados de la década de 1980. Es ampliamente utilizado para la comunicación de corta distancia entre un microcontrolador (el "maestro") y uno o más periféricos (los "esclavos"), como sensores, memorias flash, DACs, ADCs, pantallas LCD, etc. SPI es una interfaz de comunicación que permite a un dispositivo central (el Maestro) controlar y comunicarse con uno o más dispositivos periféricos (los Esclavos). Se caracteriza por:
+##### • Síncrono: La comunicación está sincronizada por una señal de reloj compartida generada por el Maestro. Esto elimina la necesidad de bits de inicio y parada, haciendo la comunicación más eficiente que la asíncrona (UART).
+##### • Full-Duplex: La transmisión y recepción de datos ocurren simultáneamente en dos líneas de datos separadas. Esto significa que mientras el Maestro envía un bit de datos, puede recibir un bit de datos al mismo tiempo.
+##### • Basado en Maestro-Esclavo: Siempre hay un dispositivo Maestro que inicia y controla la comunicación, y uno o más dispositivos Esclavo que responden al Maestro.
+#### ¿Cómo funciona SPI?
+El protocolo SPI utiliza un mínimo de cuatro líneas lógicas para la comunicación entre el Maestro y los Esclavos:
 
-### _2. _
+##### 1. SCLK (Serial Clock) / SCK: Línea de reloj serie. Esta señal es generada por el Maestro y es utilizada por todos los dispositivos (Maestro y Esclavos) para sincronizar el envío y la recepción de bits. Los datos se desplazan en cada flanco de esta señal.
+##### 2. MOSI (Master Out, Slave In) / SDO (Serial Data Out en el Maestro): Línea de datos por la que el Maestro envía datos al Esclavo. Los datos fluyen desde el Maestro hacia el Esclavo.
+##### 3. MISO (Master In, Slave Out) / SDI (Serial Data In en el Esclavo): Línea de datos por la que el Esclavo envía datos al Maestro. Los datos fluyen desde el Esclavo hacia el Maestro. SS (Slave Select) / CS (Chip Select) / nCS (Not Chip Select): Línea de selección de esclavo. Esta línea es generada por el Maestro y se utiliza para seleccionar un Esclavo específico con el que el Maestro desea 
+##### 4. comunicarse. Normalmente, cada Esclavo tiene su propia línea SS/CS dedicada. Un nivel lógico bajo (LOW) en esta línea suele activar al Esclavo.
+#### Proceso de Comunicación SPI:
+##### 1. Selección del Esclavo: El Maestro comienza la comunicación poniendo la línea SS (Chip Select) del Esclavo con el que desea comunicarse a un estado activo (generalmente LOW). Todos los demás Esclavos cuyas líneas SS estén en HIGH permanecerán inactivos.
+##### 2. Generación de Reloj: El Maestro comienza a generar pulsos en la línea SCLK.
+##### 3. Transmisión de Datos (simultánea): En cada pulso de reloj (flanco de subida o bajada, según la configuración de la polaridad y fase del reloj):
+##### • El Maestro coloca un bit de datos en la línea MOSI.
+##### • El Esclavo lee un bit de datos de la línea MOSI.
+##### • Simultáneamente, el Esclavo coloca un bit de datos en la línea MISO.
+##### • El Maestro lee un bit de datos de la línea MISO.
+##### • Esto significa que los datos se intercambian en ambas direcciones (full-duplex) en cada ciclo de reloj.
+##### 4. Finalización de la Comunicación: Una vez que se han intercambiado todos los bits necesarios (típicamente 8 bits para un byte, pero puede ser cualquier número de bits), el Maestro detiene la generación de pulsos de reloj y pone la línea SS/CS del Esclavo de nuevo a un estado inactivo (generalmente HIGH). Esto indica al Esclavo que la transmisión ha terminado y libera el bus para que el Maestro pueda seleccionar otro Esclavo o realizar otra operación.
+##### ![image](https://github.com/user-attachments/assets/ca3a6586-5039-4cf6-a5ed-9c53c633c913)
 
-### _3. _
+### _2. MSSP (Master Synchronous Serial Port)_
+El módulo MSSP (Master Synchronous Serial Port), que significa "Puerto Serie Síncrono Maestro", es un periférico de hardware encontrado en muchos microcontroladores PIC de Microchip (y en otros microcontroladores bajo diferentes nombres). Su función principal es proporcionar un hardware dedicado para la comunicación serie síncrona, específicamente a través de los protocolos SPI (Serial Peripheral Interface) e I2C (Inter-Integrated Circuit).  Es un módulo versátil que permite al microcontrolador actuar como maestro o esclavo en dos de los protocolos de comunicación serie síncronos más populares:
+##### 1. SPI (Serial Peripheral Interface): Comunicación full-duplex de alta velocidad, ideal para conectar a memorias EEPROM, sensores, DACs, ADCs, y otros microcontroladores. Utiliza cuatro líneas (MOSI, MISO, SCK, SS).
+##### 2. I2C (Inter-Integrated Circuit): Comunicación bidireccional multipunto de dos hilos, ideal para conectar a sensores, RTCs, EEPROMs, y otros microcontroladores en un bus compartido. Utiliza dos líneas (SDA, SCL).
+#### ¿Cómo funciona el MSSP?
+El funcionamiento del MSSP depende del modo en que se configure (SPI o I2C).
+##### 1. Funcionamiento en Modo SPI (Serial Peripheral Interface)
+En el modo SPI, el MSSP gestiona la transmisión y recepción de datos de forma síncrona utilizando cuatro líneas principales:
+##### • SDO (Serial Data Out) / MOSI (Master Out Slave In): Línea de datos del maestro al esclavo.
+##### • SDI (Serial Data In) / MISO (Master In Slave Out): Línea de datos del esclavo al maestro.
+##### • SCK (Serial Clock): Línea de reloj. Generada por el maestro (en modo maestro) o recibida por el esclavo (en modo esclavo).
+##### • SS (Slave Select) / CS (Chip Select): Línea de selección de esclavo. El maestro la usa para seleccionar un esclavo específico con el que quiere comunicarse.
+### _3. Transmisión modo maestro_
+La Transmisión en modo maestro es un concepto fundamental en las arquitecturas de comunicación Maestro-Esclavo, especialmente en protocolos serie síncronos como SPI e I2C, donde un dispositivo toma el control central de la comunicación. La Transmisión en Modo Maestro se refiere a la capacidad y rol de un dispositivo (el "Maestro") para iniciar, controlar y terminar la comunicación con uno o varios dispositivos Esclavos. En este modo, el Maestro es el que dicta las reglas del flujo de datos, la temporización y a qué Esclavo se dirige. Según la información proporcionada, el Maestro es el "único habilitado para iniciar y terminar la comunicación".
+#### ¿Cómo Funciona la Transmisión en Modo Maestro?
+El funcionamiento exacto varía ligeramente entre protocolos (como SPI e I2C), pero los principios generales son los siguientes:
+##### 1. Inicio de la Comunicación:
+##### • Selección del Esclavo (específico para SPI): Si hay múltiples Esclavos en el bus (como en SPI), el Maestro activa la línea de selección de esclavo (SS o CS) específica del Esclavo con el que quiere comunicarse. Esto "despierta" a ese Esclavo y le indica que esté listo para recibir o enviar datos.
+##### • Condición de Inicio (específico para I2C): En I2C, el Maestro genera una "condición de inicio" en el bus, que es una secuencia específica de cambio de niveles en las líneas de datos (SDA) y reloj (SCL) para indicar que una nueva transacción va a comenzar.
+##### • Envío de Dirección (específico para I2C): En I2C, después de la condición de inicio, el Maestro envía la dirección del Esclavo con el que quiere comunicarse, junto con un bit que indica si la operación será de lectura o escritura.
+##### 2. Control del Reloj (en protocolos síncronos como SPI/I2C):
+##### • El Maestro es el responsable de generar la señal de reloj (SCK en SPI, SCL en I2C) que sincroniza toda la transferencia de bits. La velocidad de este reloj es configurable por el Maestro.
+##### • Los Esclavos simplemente utilizan esta señal de reloj para saber cuándo deben muestrear los datos que llegan o cuándo deben colocar sus propios datos en la línea.
+##### • 3. Transmisión y Recepción de Datos:
+##### • Una vez establecido el enlace con el Esclavo (seleccionado o direccionado), el Maestro comienza a enviar o recibir datos.
+##### • Transmisión de Datos (Maestro a Esclavo): El Maestro coloca los bits de datos en la línea de datos de salida (MOSI en SPI, SDA en I2C) y los desplaza uno por uno, sincronizado con el reloj.
+##### • Recepción de Datos (Esclavo a Maestro): Simultáneamente, el Maestro lee los bits de datos de la línea de datos de entrada (MISO en SPI, SDA en I2C), también sincronizado con el reloj. En protocolos full-duplex como SPI, esto ocurre al mismo tiempo que la transmisión.
+##### • Gestión del Flujo: El Maestro determina cuántos bytes o bits se van a transferir y en qué orden.
+##### 3. Terminación de la Comunicación:
+##### • Una vez que la transacción ha finalizado, el Maestro es el que termina la comunicación.
+##### • Liberación del Esclavo (específico para SPI): El Maestro desactiva la línea de selección de esclavo (SS o CS) de ese Esclavo, indicándole que ignore el bus hasta la próxima selección.
+##### • Condición de Parada (específico para I2C): En I2C, el Maestro genera una "condición de parada", que es otra secuencia específica de cambio de niveles en SDA y SCL para liberar el bus para futuras transacciones.
+##### ![image](https://github.com/user-attachments/assets/754f832f-dfe6-46ff-9710-5fe38ac1c1f5)
 
-### _4. _
-
-### _5. _
-
-### _6. _
-
-### _7. _
-
-### _8. _
-
-### _9. _
-
-### _10. _
-
-### _11. _
-
+### _4.Modo esclavo _
+El modo esclavo es un concepto fundamental en las arquitecturas de comunicación Maestro-Esclavo, especialmente en protocolos de comunicación serial síncrona como SPI e I2C. En este modo, un dispositivo (el "Esclavo") se somete al control de un dispositivo "Maestro" y solo puede actuar en respuesta a las directivas del Maestro. El modo esclavo describe el rol de un dispositivo que no puede iniciar la comunicación por sí mismo. Su función principal es responder a las solicitudes o comandos enviados por un dispositivo Maestro. En la jerarquía Maestro-Esclavo, el Esclavo es el componente pasivo que espera instrucciones.
+#### ¿Cómo Funciona el Modo Esclavo?
+El funcionamiento del modo esclavo depende del protocolo de comunicación específico, pero los principios generales son los siguientes:
+##### 1. Espera Pasiva:
+##### • El dispositivo Esclavo se mantiene en un estado de espera, monitoreando las líneas de comunicación para detectar una señal del Maestro.
+##### • En SPI: El Esclavo espera a que su línea de selección de esclavo (SS o CS) sea activada por el Maestro (generalmente un nivel bajo).
+##### • En I2C: El Esclavo monitorea las líneas de datos (SDA) y reloj (SCL) en busca de una condición de inicio y su dirección específica enviada por el Maestro.
+##### 2. Sincronización (en protocolos síncronos):
+##### • Una vez seleccionado o direccionado, el Esclavo se sincroniza con la señal de reloj generada por el Maestro (SCK en SPI, SCL en I2C). El Esclavo no genera el reloj, sino que lo utiliza para saber cuándo leer o colocar los datos en las líneas.
+##### 3. Transmisión y Recepción de Datos (en respuesta al Maestro):
+##### • Recepción de Datos (Maestro a Esclavo): Cuando el Maestro envía datos por su línea de salida de datos (MOSI en SPI, SDA en I2C), el Esclavo los lee y los almacena en su búfer de recepción, sincronizado con el reloj del Maestro.
+##### • Transmisión de Datos (Esclavo a Maestro): Si el Maestro solicita datos (a través de un comando o un bit de lectura/escritura en la dirección I2C), el Esclavo coloca los datos solicitados en su línea de salida de datos (MISO en SPI, SDA en I2C), también sincronizado con el reloj del Maestro.
+##### • El Esclavo nunca inicia la transferencia de datos por sí mismo; siempre es en respuesta a una solicitud del Maestro.
+##### 4. Confirmación (ACK/NACK - específico para I2C):
+##### • En I2C, después de recibir un byte (ya sea una dirección o un dato), el Esclavo tiene la capacidad de enviar un bit de Acknowledge (ACK) al Maestro para confirmar que ha recibido el byte correctamente. Si no puede procesar el byte, puede enviar un NACK. En SPI, no existe un mecanismo de reconocimiento incorporado.
+##### 5. Finalización de la Comunicación:
+##### • El Esclavo vuelve a su estado pasivo de espera cuando el Maestro termina la comunicación.
+##### • En SPI: El Maestro desactiva la línea de selección de esclavo (SS o CS).
+##### • En I2C: El Maestro genera una condición de parada.
+##### ![image](https://github.com/user-attachments/assets/be774020-336f-4acc-8b44-7e50af910a6f)
 
 ## **Semana 15**
-### _1. _
+### _1. Inter-IC bus_
+El Inter-IC bus, o I2C, sirve para permitir la comunicación entre varios componentes integrados (chips) en una placa de circuito impreso, utilizando solo dos líneas de comunicación bidireccionales:
+##### • SDA (Serial Data Line): La línea por donde se transmiten y reciben los datos. Es una línea bidireccional.
+##### • SCL (Serial Clock Line): La línea de reloj, que sincroniza la transferencia de datos. Es generada por el maestro, pero los esclavos pueden "estirar" el reloj para pausar la comunicación si necesitan más tiempo para procesar los datos.
+#### Sirve para:
+##### • Comunicación de bajo costo y baja velocidad: Es ideal para conectar sensores, memorias EEPROM, convertidores analógico-digital (ADC) y digital-analógico (DAC), módulos RTC (Real Time Clock), y otros periféricos que no requieren una muy alta velocidad de datos, pero sí una configuración sencilla y un bajo número de pines.
+##### • Reducción de pines: Su principal ventaja es que utiliza solo dos cables para comunicar múltiples dispositivos, lo que simplifica el diseño de la placa y reduce el número de pines necesarios en el microcontrolador.
+##### • Capacidad Multimaestro/Multiesclavo: Permite que haya varios dispositivos Maestros en el mismo bus, aunque solo uno puede estar activo en un momento dado.
+#### ¿Cómo funciona el Inter-IC bus (I2C)?
+El funcionamiento del I2C se basa en un sistema de direccionamiento y un protocolo bien definido:
+##### 1. Condición de Inicio (Start Condition): Para iniciar una comunicación, un dispositivo Maestro genera una condición de inicio. Esto ocurre cuando la línea SDA pasa de ALTO a BAJO mientras la línea SCL está en ALTO. Todos los dispositivos en el bus detectan esta condición, que indica el inicio de una nueva transacción.
+##### 2. Direccionamiento de Esclavo: Después de la condición de inicio, el Maestro envía la dirección de 7 o 10 bits del dispositivo Esclavo con el que desea comunicarse. Junto con la dirección, se envía un bit de lectura/escritura (R/W), que indica si el Maestro va a leer datos del Esclavo o a escribir datos en él.
+##### 3. ACK/NACK (Acknowledge/Non-Acknowledge): El dispositivo Esclavo cuya dirección coincide con la enviada por el Maestro responde con un bit de ACK (Acknowledge). Esto significa que el Esclavo ha reconocido su dirección y está listo para la comunicación. Si ningún Esclavo responde o el Esclavo no está listo, el Maestro recibe un NACK.
+##### 4. Transferencia de Datos: Una vez que el Esclavo ha sido direccionado y ha enviado un ACK, comienza la transferencia de datos:
+##### • Escritura (Maestro a Esclavo): El Maestro envía bytes de datos, uno por uno. Después de cada byte, el Esclavo debe enviar un ACK para indicar que lo ha recibido correctamente.
+##### • Lectura (Esclavo a Maestro): Si el Maestro ha solicitado una lectura, el Esclavo comienza a enviar bytes de datos al Maestro. Después de cada byte recibido, el Maestro debe enviar un ACK al Esclavo para indicarle que está listo para el siguiente byte. Para indicar al Esclavo que es el último byte a leer, el Maestro envía un NACK.
+##### 5. Condición de Parada (Stop Condition): Una vez que la transferencia de datos ha finalizado, el Maestro genera una condición de parada. Esto ocurre cuando la línea SDA pasa de BAJO a ALTO mientras la línea SCL está en ALTO. Esto libera el bus para que otros dispositivos puedan usarlo.
+##### ![image](https://github.com/user-attachments/assets/074d2588-0f34-47b6-817d-ae1a4c6ee16d)
+### _2. Transmisión de datos I2C_
+La transmisión de datos en I2C (Inter-Integrated Circuit) funciona de una manera estructurada y controlada, utilizando solo dos líneas bidireccionales: SDA (Serial Data Line) y SCL (Serial Clock Line).
+#### 1. Estados del Bus:
+##### • Ambas líneas, SDA y SCL, son de drenador abierto y requieren resistencias pull-up externas para mantenerlas en un estado lógico ALTO cuando están inactivas o no están siendo controladas activamente por ningún dispositivo.
+##### • Cuando el bus está inactivo (libre), ambas líneas SDA y SCL están en ALTO.
+#### 2. Condición de Inicio (START Condition):
+##### • La transmisión de datos siempre comienza con una condición de inicio generada por el dispositivo Maestro.
+##### • Esta condición se define como un flanco de bajada (transición de ALTO a BAJO) en la línea SDA, mientras la línea SCL se mantiene en ALTO.
+##### • Todos los dispositivos en el bus detectan esta condición, lo que indica el inicio de una nueva transacción.
+#### 3. Envío de Dirección del Esclavo y Bit de Lectura/Escritura:
+##### • Después de la condición de inicio, el Maestro envía la dirección de 7 o 10 bits del dispositivo Esclavo con el que desea comunicarse.
+##### • Inmediatamente después de la dirección, el Maestro envía un bit de Lectura/Escritura (R/W):
+###### • Si R/W es '0', indica que el Maestro va a escribir datos en el Esclavo.
+###### • Si R/W es '1', indica que el Maestro va a leer datos del Esclavo.
+###### • Estos bits (dirección + R/W) se transmiten en serie por la línea SDA, sincronizados por los pulsos de SCL generados por el Maestro.
+#### 4. Bit de Reconocimiento (ACK/NACK - Acknowledge/Non-Acknowledge):
+##### • Después de que el Maestro ha transmitido la dirección y el bit R/W (9 bits en total), el bus se libera brevemente para un bit de reconocimiento.
+##### • El dispositivo Esclavo cuya dirección coincide con la enviada por el Maestro debe tirar la línea SDA a BAJO durante el noveno pulso de SCL para enviar un bit de ACK (Acknowledge). Esto le indica al Maestro que el Esclavo está presente, ha reconocido su dirección y está listo para la comunicación.
+##### • Si ningún Esclavo responde con un ACK, o el Esclavo direccionado no puede procesar la solicitud, la línea SDA permanece en ALTO (o es tirada a ALTO por una resistencia pull-up), lo que se interpreta como un NACK (Non-Acknowledge). El Maestro debe manejar este NACK adecuadamente, quizás reintentando o terminando la transacción.
+#### 5. Transferencia de Datos (Byte a Byte):
+##### • Una vez que el Esclavo ha enviado un ACK, comienza la fase de transferencia de datos real, byte a byte.
+##### • Si el Maestro está Escribiendo en el Esclavo:
+###### • El Maestro coloca 8 bits de datos en la línea SDA.
+###### • El Esclavo lee esos 8 bits.
+###### • Después de cada byte, el Esclavo debe enviar un ACK (tirando SDA a BAJO) para confirmar que ha recibido el byte correctamente y que está listo para el siguiente.
+##### • Si el Maestro está Leyendo del Esclavo:
+###### • El Esclavo coloca 8 bits de datos en la línea SDA.
+###### • El Maestro lee esos 8 bits.
+###### • Después de cada byte, el Maestro debe enviar un ACK (tirando SDA a BAJO) al Esclavo para indicarle que ha recibido el byte y que está listo para el siguiente.
+###### • Cuando el Maestro ha recibido todos los bytes que necesita, envía un NACK (dejando SDA en ALTO) al Esclavo en lugar de un ACK. Esto le indica al Esclavo que es el último byte a leer y que la transmisión de datos por parte del Esclavo debe finalizar.
+#### 6. Condición de Parada (STOP Condition):
+##### • Una vez que toda la transferencia de datos ha finalizado (y el último byte ha sido ACK/NACKeado), el Maestro genera una condición de parada.
+##### • Esta condición se define como un flanco de subida (transición de BAJO a ALTO) en la línea SDA, mientras la línea SCL se mantiene en ALTO.
+##### • La condición de parada libera el bus, permitiendo que otros Maestros (si los hay) o el mismo Maestro inicien nuevas transacciones.
+##### ![image](https://github.com/user-attachments/assets/ec0a7be3-54cc-4efb-9f95-510a2708a722)
+### _3. Manejo de velocidad desde el esclavo_
+El "manejo de velocidad desde el esclavo" en el contexto de la comunicación serial síncrona se refiere a la capacidad de un dispositivo esclavo para influir o controlar temporalmente la velocidad de la transmisión de datos, a pesar de que el maestro es el que genera la señal de reloj. Esto es crucial en escenarios donde el esclavo necesita más tiempo para procesar datos o prepararse para la siguiente transferencia. El mecanismo principal que permite esto es el "Clock Stretching" (Estiramiento del Reloj), y es una característica distintiva del protocolo I2C. SPI no tiene un mecanismo equivalente nativo para que el esclavo controle el reloj.
+#### ¿Cómo funciona el "Clock Stretching" (Estiramiento del Reloj) en I2C?
+El estiramiento del reloj permite a un dispositivo esclavo (o incluso a otro maestro en un entorno multi-maestro) mantener la línea SCL (Serial Clock Line) en BAJO después de que el Maestro haya liberado la línea.
+##### 1. El Maestro genera pulsos de reloj (SCL): Durante una transacción I2C, el Maestro es quien genera la señal de reloj en la línea SCL para sincronizar la transferencia de datos.
+##### 2. El Maestro libera la línea SCL: Después de un cierto tiempo (generalmente el tiempo de "bajo" del pulso de reloj), el Maestro libera la línea SCL (es decir, deja de tirar de ella a BAJO, permitiendo que la resistencia pull-up la eleve a ALTO).
+##### 3. El Esclavo tira SCL a BAJO (Estiramiento): Si el Esclavo necesita más tiempo para procesar el byte que acaba de recibir, o para preparar el siguiente byte a enviar, tira la línea SCL a BAJO y la mantiene así.
+##### 4. El Maestro espera: El Maestro, que esperaba que SCL subiera a ALTO para continuar con el siguiente pulso de reloj (o para muestrear datos), detecta que SCL permanece en BAJO. El Maestro debe esperar pasivamente hasta que la línea SCL vuelva a subir a ALTO.
+##### 5. El Esclavo libera SCL: Una vez que el Esclavo ha terminado su procesamiento interno y está listo para continuar, libera la línea SCL. La resistencia pull-up la eleva de nuevo a ALTO.
+##### 6. La Comunicación se Reanuda: El Maestro detecta que SCL ha vuelto a ALTO y puede continuar generando los siguientes pulsos de reloj y la transferencia de datos.
+##### ![image](https://github.com/user-attachments/assets/6692ed7d-e97a-4fc5-9d81-b475e16aaa49)
 
-### _2. _
-
-### _3. _
-
-### _4. _
-
-### _5. _
-
-### _6. _
-
-### _7. _
-
-### _8. _
-
-### _9. _
-
-### _10. _
-
-### _11. _
+### _5. Configuracion I2C en el PIC_
+#### 1. Configurar puertos TRIS
+#### 2. Configurar velocidad
+#### 3. Configurar modo maestro 
+#### 4. Cargar registro SSPAD para lograr la velocidad
+#### 5. Enviar señal start
+#### 6. Enviar dirección
+#### 7. Enviar acknowledge (opcional)
+#### 8. Enviar dato
+Funciones
+##### ![image](https://github.com/user-attachments/assets/cfa8f950-511b-4c5b-a50e-2594ff81ed0e)
+Funciones Tx y Rx
+##### ![image](https://github.com/user-attachments/assets/7e6f701d-49df-463a-8346-06968712406b)
+Funciones Acknnowledgement
+##### ![image](https://github.com/user-attachments/assets/37f659da-3cfd-44bc-ae22-4394dcccbfad)
+Funciones flujo de datos
+#####ñ ![image](https://github.com/user-attachments/assets/d3dc578e-e3c3-4379-85e9-c176af1461af)
+Función de inicialización
+##### ![image](https://github.com/user-attachments/assets/9b44af06-91df-41ed-a6fa-dc72be5ea4ab)
+Programa principal
+##### ![image](https://github.com/user-attachments/assets/5c5cea98-26a1-439a-8d81-452d1e67ef0a)
+## CONCLUSION
+La comunicación en microcontroladores es un ecosistema diverso y estratégico, que va desde la transmisión fundamental de bits hasta complejas arquitecturas de red, donde la elección y configuración adecuadas son cruciales para la funcionalidad y fiabilidad de los sistemas embebidos. A lo largo de este semetre, hemos explorado los siguientes puntos clave que fundamentan esta conclusión:
+### 1. Fundamentos de la Transmisión de Datos:
+#### • La comunicación se clasifica por la dirección del flujo (Simplex, Half Duplex, Full Duplex) y la sincronización (Asíncrona/UART/SCI/EUSART, Síncrona/SPI/I2C/MSSP).
+#### • La velocidad (baud rate), el número de bits de datos, los bits de parada y la paridad son parámetros esenciales y deben coincidir entre los dispositivos para una comunicación asíncrona efectiva.
+### 2. Organización de la Comunicación:
+#### • Las topologías (Bus, Punto a Punto) definen la disposición física y lógica de los dispositivos, impactando directamente en el cableado, la escalabilidad y la complejidad.
+#### • Las arquitecturas (Maestro-Esclavo, Todos Iguales) dictan la jerarquía y el control sobre quién inicia y gestiona la comunicación, lo que a su vez determina la necesidad de mecanismos de direccionamiento y gestión de acceso al medio.
+### 3. Integridad y Temporización de la Señal:
+#### • Las condiciones eléctricas (Terminación Sencilla vs. Diferencial) son vitales para la robustez de la señal. La transmisión diferencial es superior para distancias largas y entornos ruidosos debido a su inmunidad al ruido en modo común.
+#### • La granularidad del temporizador y la gestión de los tiempos de lectura son críticas para sistemas en tiempo real. Un temporizador con baja granularidad y una lectura lenta pueden llevar a la pérdida de eventos o a mediciones imprecisas, lo que resalta la importancia de ISRs eficientes y búferes de hardware.
+### 4. Periféricos de Comunicación en Microcontroladores:
+#### • Los módulos de hardware como UART/SCI/EUSART permiten la comunicación serial asíncrona, con el EUSART ofreciendo mejoras significativas como la detección automática de baudios y modos de 9 bits para redes multipunto.
+#### • El módulo MSSP es fundamental para implementar protocolos seriales síncronos como SPI e I2C, delegando gran parte de la complejidad a hardware, lo que libera recursos del CPU y mejora la fiabilidad y velocidad.
+#### • SPI es ideal para comunicación rápida y full-duplex punto a punto o con pocos esclavos (usando múltiples líneas SS), sin mecanismos de reconocimiento integrados.
+#### • I2C es perfecto para redes multimaestro/multiesclavo con pocos pines, ofreciendo direccionamiento, ACK/NACK y la capacidad única de estiramiento del reloj para que los esclavos gestionen su velocidad de procesamiento.
+En esencia, la comunicación en microcontroladores es un campo donde la interoperabilidad es clave. Elegir el protocolo, la topología y la arquitectura adecuados, junto con una configuración precisa de los parámetros de hardware, son pasos determinantes para construir sistemas embebidos eficientes, fiables y capaces de interactuar con el mundo exterior de forma exitosa. La comprensión profunda de cada uno de estos aspectos permite a los diseñadores optimizar el rendimiento, el consumo de energía y la complejidad del software.
+## REFERENCIAS
+### https://aulas.ecci.edu.co/mod/resource/view.php?id=217972
+### https://aulas.ecci.edu.co/mod/resource/view.php?id=217974
+### https://aulas.ecci.edu.co/mod/resource/view.php?id=217977
+### https://aulas.ecci.edu.co/mod/resource/view.php?id=217979
+### Datasheet pic18f4550: https://www.microchip.com/
